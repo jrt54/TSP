@@ -41,26 +41,27 @@ m = Model()
 
 #could also use:
 vars = tupledict()
-for i,j in dist.keys():
-   vars[i,j] = m.addVar(lb = 0.0, ub = 1.0, obj=dist[i,j], vtype=GRB.CONTINUOUS,                       name='e[%d,%d]'%(i,j))
+#for i,j in dist.keys():
+#   vars[i,j] = m.addVar(lb = 0.0, ub = 1.0, obj=dist[i,j], vtype=GRB.CONTINUOUS,                       name='e[%d,%d]'%(i,j))
 
-for i, j in vars.keys():
-   vars[j, i] = vars[i, j]
+#for i, j in vars.keys():
+#   vars[j, i] = vars[i, j]
 
 
-#vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
-#for i,j in vars.keys():
-#	 vars[j,i] = vars[i,j] # edge in opposite direction
+vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
+for i,j in vars.keys():
+	 vars[j,i] = vars[i,j] # edge in opposite direction
 
 
 # Add degree-2 constraint, each node is entered and exited
+for i in range(V):
+	m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
 
-m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
 
-
+m.update()
 
 m._vars = vars
-m.Params.lazyConstraints = 1
+#m.Params.lazyConstraints = 1
 #m.optimize(subtourlim)
 m.optimize()
 
