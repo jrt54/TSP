@@ -1,4 +1,4 @@
-#from gurobipy import *
+from gurobipy import *
 from sys import argv
 
 filename = "test.txt"
@@ -9,7 +9,7 @@ with open(filename) as input:
     edgeset.append(lines.rstrip('\n'))
 
 #V is number of nodes, E is number of edges
-V, E = (float(x) for x in edgeset[0].split())
+V, E = (int(x) for x in edgeset[0].split())
 print V, E
 
 
@@ -39,9 +39,18 @@ m = Model()
 #creates variable x_i,j from 0 to 1 corresponding to whether an edge is traversed or not.
 #creates corresponding cost coefficient for the weight on that edge 
 
-vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
-for i,j in vars.keys():
-    vars[j,i] = vars[i,j] # edge in opposite direction
+#could also use:
+vars = tupledict()
+for i,j in dist.keys():
+   vars[i,j] = m.addVar(lb = 0.0, ub = 1.0, obj=dist[i,j], vtype=GRB.CONTINUOUS,                       name='e[%d,%d]'%(i,j))
+
+for i, j in vars.keys():
+   vars[j, i] = vars[i, j]
+
+
+#vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
+#for i,j in vars.keys():
+#	 vars[j,i] = vars[i,j] # edge in opposite direction
 
 
 # Add degree-2 constraint, each node is entered and exited
@@ -52,8 +61,8 @@ m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
 
 m._vars = vars
 m.Params.lazyConstraints = 1
-m.optimize(subtourlim)
-
+#m.optimize(subtourlim)
+m.optimize()
 
 vals = m.getAttr('x', vars)
 selected = tuplelist((i,j) for i,j in vals.keys() if vals[i,j] > 0.0)
