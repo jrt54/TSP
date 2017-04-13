@@ -22,12 +22,13 @@ dist = {}
 #  begin, end, cost = ([float(x) for x in edgeset[j].split()])
 #  begin, end, cost = int(edgeset[j].split()[0]), int(edgeset[j].split()[1]), float(edgeset[j].split()[2])
 
+dist = {}
 #read file and create a dictionary of edge, 
 for j in range(1, len(edgeset)):
   begin, end, cost = ([float(x) for x in edgeset[j].split()])
+  dist.update({(begin, end): cost})
 
-  dist = {(begin, end): cost}
-
+#print dist
 
 #print((int(46), int(47)) in weight)
 
@@ -40,7 +41,7 @@ m = Model()
 #creates corresponding cost coefficient for the weight on that edge 
 
 #could also use:
-vars = tupledict()
+#vars = tupledict()
 #for i,j in dist.keys():
 #   vars[i,j] = m.addVar(lb = 0.0, ub = 1.0, obj=dist[i,j], vtype=GRB.CONTINUOUS,                       name='e[%d,%d]'%(i,j))
 
@@ -54,8 +55,7 @@ for i,j in vars.keys():
 
 
 # Add degree-2 constraint, each node is entered and exited
-for i in range(V):
-	m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
+m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
 
 
 m.update()
@@ -67,13 +67,14 @@ m.optimize()
 
 vals = m.getAttr('x', vars)
 selected = tuplelist((i,j) for i,j in vals.keys() if vals[i,j] > 0.0)
-print(x for x in selected)
+print(selected)
 
 
-print('')
-print('Optimal tour: %s' % str(tour))
-print('Optimal cost: %g' % m.objVal)
-print('')
+m.write("test.sol")
+#print('')
+#print('Optimal tour: %s' % str(tour))
+#print('Optimal cost: %g' % m.objVal)
+#print('')
 
 
 ##find subtour out of list of edges
