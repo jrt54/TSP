@@ -12,6 +12,8 @@ with open(filename) as input:
 V, E = (int(x) for x in edgeset[0].split())
 print V, E
 
+print edgeset[1].split()
+
 
 dist = {}
 
@@ -24,7 +26,8 @@ dist = {}
 
 dist = {}
 #read file and create a dictionary of edge, 
-for j in range(1, len(edgeset)):
+for j in range(1, len(edgeset)): 
+  print j
   begin, end, cost = ([float(x) for x in edgeset[j].split()])
   dist.update({(begin, end): cost})
 

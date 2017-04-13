@@ -598,3 +598,47 @@ Pool objective bound 10081
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 1.008100000000e+04, best bound 1.008100000000e+04, gap 0.0000%
+
+Gurobi 7.0.2 (linux64, Python) logging started Thu Apr 13 13:28:21 2017
+
+Optimize a model with 4 rows, 5 columns and 10 nonzeros
+Variable types: 0 continuous, 5 integer (5 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 4 rows and 5 columns
+Presolve time: 0.01s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds
+Thread count was 1 (of 1 available processors)
+
+Solution count 1: 7 
+Pool objective bound 7
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.000000000000e+00, best bound 7.000000000000e+00, gap 0.0000%
+
+Gurobi 7.0.2 (linux64, Python) logging started Thu Apr 13 13:29:15 2017
+
+Optimize a model with 4 rows, 5 columns and 10 nonzeros
+Variable types: 0 continuous, 5 integer (5 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 4e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e+00, 2e+00]
+Presolve removed 4 rows and 5 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 1 available processors)
+
+Solution count 1: 4 
+Pool objective bound 4
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.000000000000e+00, best bound 4.000000000000e+00, gap 0.0000%
