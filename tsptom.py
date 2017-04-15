@@ -8,8 +8,12 @@ V = A[:,:2]
 W = A[:,2]
 
 model = Model("TSP")
-
-vars = model.addVars(Esize, vtype=GRB.CONTINUOUS)
+varnames = []
+for i in range(Esize):
+    varnames.append("(" + str(int(V[i,0])) + "," + str(int(V[i,1])) + ")")
+    
+print(varnames)
+vars = model.addVars(Esize, vtype=GRB.CONTINUOUS, name="e")
 
 model.addConstrs((vars[i] >= 0 for i in range(Esize)), 'c0')
 model.addConstrs((vars[i] <= 1 for i in range(Esize)), 'c1')
@@ -30,5 +34,7 @@ l = vars.prod(dic)
 model.setObjective(l, GRB.MINIMIZE)
 
 model.optimize()
+
+
 
 model.write("tomout.sol")
