@@ -1,11 +1,18 @@
 from gurobipy import *
 from sys import argv
+import operator
 
 #G is dict containing edges mapped to solution weight
 def minimumCutPhase(G, start):
   A = [start]
   print(A)
-  
+  #gets all edges connecting A to rest of G
+  connected = {(i,j):G[i,j] for i,j in G.keys() if (i in A and j not in A) or (j in A and i not in A)}
+  for i,j in connected.keys():
+    print("wow")
+    print(i,j)
+  print(connected)
+  #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
 
 def main():
   filename = "test.txt"
@@ -44,11 +51,13 @@ def main():
   m.optimize()
   
   vals = m.getAttr('x', vars)
-  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0}
+  #select edges where solution > 0. specify i<j to remove duplicates
+  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}
 
+  
+  minimumCutPhase(selected, selected.keys()[0][0])
+  
   m.write("test.sol")
   
 if __name__ == "__main__":
   main()
-
-
