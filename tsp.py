@@ -12,18 +12,12 @@ def minimumCutPhase(G ,start):
       V.append(i)
     if j not in V:
       V.append(j)
-  print("Vertices are")
-  print(V)
   A = [start]
-  print("G is")
-  print(G)
-  print("A is")
-  print(A)
   #gets all edges connecting A to rest of G
   while len(V) != len(A):
     connected = {(i,j):G[i,j] for i,j in G.keys() if (i in A and j not in A) or (j in A and i not in A)}
-    print("connected is")
-    print(connected)
+    #print("connected is")
+    #print(connected)
     score = {}
     for i,j in connected.keys():
       if i in A and j not in A:
@@ -36,20 +30,41 @@ def minimumCutPhase(G ,start):
           score[i] = score[i] + connected[i,j]
         if i not in score.keys():
           score[i] = connected[i,j]
-    print("scores are")
-    print(score)
     most_connected = max(score.iteritems(), key=operator.itemgetter(1))[0]
     A.append(most_connected)
-    print("A is")
-    print(A)
-    print("A size")
-    print(len(A))
-    print("V size")
-    print(len(V))
-  #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
+  print("min cut generated")
+  return A[-2], A[-1]
 
+#finds minimum cut by looping over minimumCutPhase
+def minimumCut(G, start):
+  print("hi")
+  #get all nodes and store in V
+  V = []
+  for i,j in G.keys():
+    if i not in V:
+      V.append(i)
+    if j not in V:
+      V.append(j)
+  print(V)
+  #initialize merge dictionary
+  merge = {}
+  for i in V:
+    merge[i] = [i]
+  print("merge formed")
+  print(merge)
+  for k in range(3):
+    second, last = minimumCutPhase(G, start)
+    print("nodes " + str(second) + " and " + str(last) + " will be merged")
+    #calculate cut cost
+    #merge points in second into last
+    
+    #update weights and connectivity on edges connected to second and last
+    #delete node second
+
+  print("wow")
+  
 def main():
-  filename = "data/att48.txt"
+  filename = "data/berlin52.txt"
   edgeset = []
 
   with open(filename) as input:
@@ -92,10 +107,10 @@ def main():
   
   vals = m.getAttr('x', vars)
   #select edges where solution > 0. specify i<j to remove duplicates
-  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}
+  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] >= 0.0 and i<j}
 
   
-  minimumCutPhase(selected, selected.keys()[0][0])
+  minimumCut(selected, selected.keys()[0][0])
   
   m.write("test.sol")
   
