@@ -6,24 +6,19 @@ import numpy as np
 #G is dict containing edges mapped to solution weight
 def minimumCutPhase(G ,start):
   V = []
+  #print(G)
   #form list of vertices
   for i,j in G.keys():
     if i not in V:
       V.append(i)
     if j not in V:
       V.append(j)
-  print("Vertices are")
-  print(V)
   A = [start]
-  print("G is")
-  print(G)
-  print("A is")
-  print(A)
   #gets all edges connecting A to rest of G
   while len(V) != len(A):
     connected = {(i,j):G[i,j] for i,j in G.keys() if (i in A and j not in A) or (j in A and i not in A)}
-    print("connected is")
-    print(connected)
+    #print("connected is")
+    #print(connected)
     score = {}
     for i,j in connected.keys():
       if i in A and j not in A:
@@ -36,18 +31,120 @@ def minimumCutPhase(G ,start):
           score[i] = score[i] + connected[i,j]
         if i not in score.keys():
           score[i] = connected[i,j]
-    print("scores are")
-    print(score)
     most_connected = max(score.iteritems(), key=operator.itemgetter(1))[0]
     A.append(most_connected)
-    print("A is")
-    print(A)
-    print("A size")
-    print(len(A))
-    print("V size")
-    print(len(V))
-  #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
+  print("min cut generated")
+  return A[-2], A[-1]
 
+#finds minimum cut by looping over minimumCutPhase
+def minimumCut(G, start):
+  Gorig = G.copy()
+  print("hi")
+  #get all nodes and store in V
+  V = []
+  for i,j in G.keys():
+    if i not in V:
+      V.append(i)
+    if j not in V:
+      V.append(j)
+  print(V)
+  #initialize merge dictionary
+  merge = {}
+  for i in V:
+    merge[i] = [i]
+  #print("merge formed")
+  #print(merge)
+  minCost = -1
+  while len(merge.keys()) > 1:
+    second, last = minimumCutPhase(G, start)
+    print("nodes " + str(second) + " and " + str(last) + " will be merged")
+    #calculate cut cost
+    cost = 0
+    cut = {}
+    for i,j in Gorig.keys():
+      if i in merge[last] and j not in merge[last]:
+        cost += Gorig[i,j]
+        cut[i,j] = Gorig[i,j]
+      if j in merge[last] and i not in merge[last]:
+        cost += Gorig[i,j]
+        cut[i,j] = Gorig[i,j]
+    if minCost<0:
+      minCost = cost
+      minCut = cut
+      minMerge = merge.copy()
+    elif cost < minCost:
+      minCost = cost
+      minCut = cut
+      minMerge = merge.copy()
+      
+    #update merge dictionary
+    merge[last] += merge[second]
+    del merge[second]
+    #update weights and connectivity on edges connected to second and last
+    #find things connected to second
+    connected = {(i,j):G[i,j] for i,j in G.keys() if (i in [second] and j not in [second]) or (j in [second] and i not in [second])}
+    #print("things connected to node second (" + str(second) + ")")
+    #print(connected)
+    for i,j in connected.keys():
+      #delete edge between second,last
+      #if i==last:
+      #del connected[i,j]
+      #if j==last:
+      #del connected[i,j]
+      if i==second:
+        if (j,last) in G.keys():
+          G[j,last] += G[i,j]
+        elif (last,j) in G.keys():
+          G[last,j] += G[i,j]
+        elif j<last:
+          G[j,last] = G[i,j]
+        elif last<j:
+          G[last,j] = G[i,j]
+      if j==second:
+        if (i,last) in G.keys():
+          G[i,last] += G[i,j]
+        elif (last,i) in G.keys():
+          G[last,i] += G[i,j]
+        elif i<last:
+          G[i,last] = G[i,j]
+        elif last<i:
+          G[last,i] = G[i,j]
+      del G[i,j]
+  print("wow")
+  print("the minimum cut is")
+  print(minCut)
+  print("with cost")
+  print(minCost)
+  print("and merge")
+  print(minMerge)
+
+def testMinCut():
+  filename = "data/stoer-wagner-ex.txt"
+  edgeset = []
+
+  with open(filename) as input:
+    for lines in input:
+      edgeset.append(lines.rstrip('\n'))
+
+  #V is number of nodes, E is number of edges
+  V, E = (int(x) for x in edgeset[0].split())
+
+  DATA = np.loadtxt(filename, skiprows=1)
+  EDGES = DATA[:,:2]
+  WEIGHTS = DATA[:,2]
+
+  print V, E
+  
+  dist = {}
+  #read file and create a dictionary of edge, 
+  for j in range(len(edgeset)-2):
+    begin = int(EDGES[j,0])
+    end   = int(EDGES[j,1])
+    cost  = WEIGHTS[j]
+    #begin, end, cost = ([float(x) for x in edgeset[j].split()])
+    dist.update({(begin, end): cost})
+
+  minimumCut(dist, 1)
 def main():
   filename = "data/att48.txt"
   edgeset = []
@@ -74,7 +171,6 @@ def main():
     #begin, end, cost = ([float(x) for x in edgeset[j].split()])
     dist.update({(begin, end): cost})
 
-
   #create model
   m = Model()
   #add variables for each edge to model
@@ -92,11 +188,11 @@ def main():
   
   vals = m.getAttr('x', vars)
   #select edges where solution > 0. specify i<j to remove duplicates
-  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}
+  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] >= 0.0 and i<j}
 
   
-  minimumCutPhase(selected, selected.keys()[0][0])
-  
+  minimumCut(selected, selected.keys()[0][0])
+  #minimumCut(vars, vars.keys()[0][1])
   m.write("test.sol")
   
 if __name__ == "__main__":
