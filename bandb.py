@@ -7,21 +7,49 @@ import numpy as np
 
   #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
 
-def branch(model, where):
-  mother = model.copy()
-  motheropt = model.objVal
-  branches = [(mother, motheropt)]
+def branch(model, vars):
+	mother = model.copy()
+	motheropt = model.objVal
+  	branches = [(mother, motheropt)]
   
-  #sort them by most promising branch
-  sorted(branches, key=lambda x: x[1])
-  #if the most promising branch is integral then it is the optimal solution
-  currenthead = branches[0]
-  currentmodel = currenthead[0] 
-  currentmodel.optimize()
-  #currentmodel.getAttr(GRB.Attr.x, currentmodel.getVars())
-  m._vars = vars
-  vals = currentmodel.getAttr('x', vars)
-  print(if all(isinstance(vals[i, j], int) for i, j in vals.keys()))
+	#sort them by most promising branch
+	sorted(branches, key=lambda x: x[1])
+	#if the most promising branch is integral then it is the optimal solution
+	currenthead = branches[0]
+	currentmodel = currenthead[0] 
+	currentmodel.optimize()
+	#currentmodel.getAttr(GRB.Attr.x, currentmodel.getVars())
+	currentmodel._vars = vars
+	vals = currentmodel.getAttr('x', vars)
+	print vars[22, 12] 
+	#print(vals[20, 44])
+	#print(list((i, j) for (i,j) in vals))
+	#print(list(vals[i, j] for i,j in vals))
+	print(all(isinstance(vals[i, j], int) for i, j in vals.keys()))
+	#print((vals[20, 44]== 0))
+  
+	#make while loop later
+	if not all(isinstance(vals[i, j], int) for i, j in vals.keys()): 
+		for i, j in vals.keys():
+			if not (vals[i, j] == 0 or vals[i, j] == 1):
+				print (i, j)
+				edgetobound = (i, j)
+				break
+		print currentmodel
+
+
+		daughter1 = currentmodel.copy()
+		daughter1._vars = vars
+		print vars
+		print vars[22, 12]
+		daughter1.addConstr(vars[22, 12] == 0)
+
+		daughter2 = currentmodel.copy()
+		daughter2.addConstr(vars[22, 12]==1)
+	
+
+ 
+
 
   # #return, best solution is 
   # else
@@ -31,7 +59,7 @@ def branch(model, where):
   #daughter1.addconstraint(nonintv = 0), etc.
   #take model from branch list
   #repeat
-  #
+  
 
 
 
@@ -81,8 +109,7 @@ def main():
   #select edges where solution > 0. specify i<j to remove duplicates
   selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}
 
-  
-  minimumCutPhase(selected, selected.keys()[0][0])
+  branch(m, vars)
   
   m.write("test.sol")
   
