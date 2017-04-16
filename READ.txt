@@ -1,0 +1,25 @@
+TSP Project
+Jonas Actor, Tom Klotz, Jeremy Tillay
+CAAM 571
+
+Upper Bound Algorithms: (Greedy) Nearest Neighbor, 2Opt, 3Opt, 2/3Opt
+
+Description of files:
+GNN.py : finds nearest neighbor TSP solution from a specified starting node
+enhance.py : performs 2Opt and 3Opt on a provided TSP solution
+getTSP_UB.py : calls GNN and determines which enhancement scheme should be used
+UpperBound.py : user interface; reads in .txt file, makes node-node adjacency matrix, and prints solution
+
+Usage:
+$ python UpperBound.py '<file name>' e
+
+<file name> : name of file, in format specified by project
+e : an integer, either 0, 2, 3, or 23:
+	0  : runs GNN; no enhancement algorithm
+	2  : performs 2Opt on GNN solution
+	3  : performs 3Opt on GNN solution
+	23 : perofrms 2Opt on GNN solution, and then 3Opt on 2Opt's solution
+
+Output:
+Displays edges and weights in optimal TSP path, as per project description
+Also outputs time elapsed, and the number of enhancement moves made for the optimal solution
