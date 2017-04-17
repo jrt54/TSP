@@ -7,7 +7,8 @@ import numpy as np
 
   #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
 
-def branch(model, vars):
+
+def branch(model, vars, dist):
 	mother = model.copy()
 	motheropt = model.objVal
   	branches = [(mother, motheropt)]
@@ -18,34 +19,55 @@ def branch(model, vars):
 	currenthead = branches[0]
 	currentmodel = currenthead[0] 
 	currentmodel.optimize()
-	#currentmodel.getAttr(GRB.Attr.x, currentmodel.getVars())
-	currentmodel._vars = vars
+	
+
 	vals = currentmodel.getAttr('x', vars)
-	print vars[22, 12] 
-	#print(vals[20, 44])
-	#print(list((i, j) for (i,j) in vals))
-	#print(list(vals[i, j] for i,j in vals))
-	print(all(isinstance(vals[i, j], int) for i, j in vals.keys()))
-	#print((vals[20, 44]== 0))
+
+	#print(all(isinstance(vals[i, j], int) for i, j in vars.keys()))
   
-	#make while loop later
+	#this will be a while loop later, for now we're branching ONCE
+	#if the current solution is not integral proceed
 	if not all(isinstance(vals[i, j], int) for i, j in vals.keys()): 
 		for i, j in vals.keys():
 			if not (vals[i, j] == 0 or vals[i, j] == 1):
 				print (i, j)
+				#find a nonintegral edge
 				edgetobound = (i, j)
 				break
-		print currentmodel
+		#print currentmodel
 
-
+		
+		#daughter1 will enforce that a nonintegral edge is 0
 		daughter1 = currentmodel.copy()
-		daughter1._vars = vars
-		print vars
-		print vars[22, 12]
-		daughter1.addConstr(vars[22, 12] == 0)
 
-		daughter2 = currentmodel.copy()
-		daughter2.addConstr(vars[22, 12]==1)
+		print('here is daughter 1')
+		daughter1.optimize()
+		#for v in daughter1.getVars():
+		#	print v.x
+		print(vars[22, 12])
+		#print dist.keys()
+		dist[(12, 22)]
+		vars = daughter1.addVars(dist.keys(), ub = 1, lb = 0, obj=dist, vtype=GRB.CONTINUOUS, name='e')
+  		for i,j in vars.keys():
+    			vars[j,i] = vars[i,j] #edge (i,j) same as edge (j,i)
+ 		
+
+
+
+		daughter1._vars = vars
+		daughter1.update()
+ 
+
+		
+		##doesn't work
+		daughter1.addConstr(vars[22, 12], GRB.EQUAL, 0,'bound on branch')
+		daughter1.update()
+		daughter1.optimize()
+		print(vars[22, 12]) 		
+		vals = daughter1.getAttr('x', vars)
+		##daughter 2 enforces a nonintegral edge is 1
+		#daughter2 = currentmodel.copy()
+		#daughter2.addConstr(vars[22, 12]==1)
 	
 
  
@@ -100,6 +122,7 @@ def main():
   # Add degree-2 constraint, each node is entered and exited
   m.addConstrs(vars.sum(i,'*') == 2 for i in range(V))
 
+
   m._vars = vars
   m.Params.lazyConstraints = 1
 
@@ -109,7 +132,8 @@ def main():
   #select edges where solution > 0. specify i<j to remove duplicates
   selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}
 
-  branch(m, vars)
+
+  branch(m, vars, dist)
   
   m.write("test.sol")
   
