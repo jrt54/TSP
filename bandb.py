@@ -2,7 +2,7 @@ from gurobipy import *
 from sys import argv
 import operator
 import numpy as np
-
+import tsp
 #G is dict containing edges mapped to solution weight
 
   #selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] > 0.0 and i<j}  
@@ -41,7 +41,7 @@ def branch(model):
 		#daughter1 will enforce that a nonintegral edge is 0
 		daughter1.addConstr(boundednode1 == 0)		
 		daughter1.optimize()
-
+                daughter1 = tsp.subtour(daughter1)
 		
 		daughter2 = currentmodel.copy()
 		boundednode2 = daughter2.getVarByName(branchingnode.VarName)
@@ -49,7 +49,8 @@ def branch(model):
 		#daughter2 will enforce that a nonintegral edge is 1
 		daughter2.addConstr(boundednode2 == 1)
 		daughter2.optimize()
-		
+                daughter2 = tsp.subtour(daughter2)
+                
 		if not daughter2.Status == GRB.INFEASIBLE:
 			branches.extend([(daughter2, daughter2.objVal)])
 		if not daughter1.STATUS == GRB.INFEASIBLE:

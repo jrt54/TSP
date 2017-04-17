@@ -213,8 +213,8 @@ def main():
   m.optimize()
   print("NAME")
   #print(m.getVars()[0].getAttr(GRB.Attr.VarName)[3:-1])
-  m = subtour(m)
-  #branch(m)
+  #m = subtour(m)
+  bandb.branch(m)
   
 if __name__ == "__main__":
   main()
