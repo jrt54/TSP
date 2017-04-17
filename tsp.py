@@ -33,13 +33,13 @@ def minimumCutPhase(G ,start):
           score[i] = connected[i,j]
     most_connected = max(score.iteritems(), key=operator.itemgetter(1))[0]
     A.append(most_connected)
-  print("min cut generated")
+  #print("min cut generated")
   return A[-2], A[-1]
 
 #finds minimum cut by looping over minimumCutPhase
 def minimumCut(G, start):
   Gorig = G.copy()
-  print("hi")
+  #print("hi")
   #get all nodes and store in V
   V = []
   for i,j in G.keys():
@@ -47,7 +47,7 @@ def minimumCut(G, start):
       V.append(i)
     if j not in V:
       V.append(j)
-  print(V)
+  #print(V)
   #initialize merge dictionary
   merge = {}
   for i in V:
@@ -57,7 +57,7 @@ def minimumCut(G, start):
   minCost = -1
   while len(merge.keys()) > 1:
     second, last = minimumCutPhase(G, start)
-    print("nodes " + str(second) + " and " + str(last) + " will be merged")
+    #print("nodes " + str(second) + " and " + str(last) + " will be merged")
     #calculate cut cost
     cost = 0
     cut = {}
@@ -71,11 +71,11 @@ def minimumCut(G, start):
     if minCost<0:
       minCost = cost
       minCut = cut
-      minMerge = merge.copy()
+      minMerge = merge.copy()[last]
     elif cost < minCost:
       minCost = cost
       minCut = cut
-      minMerge = merge.copy()
+      minMerge = merge.copy()[last]
       
     #update merge dictionary
     merge[last] += merge[second]
@@ -110,13 +110,14 @@ def minimumCut(G, start):
         elif last<i:
           G[last,i] = G[i,j]
       del G[i,j]
-  print("wow")
-  print("the minimum cut is")
-  print(minCut)
-  print("with cost")
-  print(minCost)
-  print("and merge")
-  print(minMerge)
+  #print("wow")
+  #print("the minimum cut is")
+  #print(minCut)
+  #print("min cut cost")
+  #print(minCost)
+  #print("and merge")
+  #print(minMerge)
+  return minCost, minCut
 
 def testMinCut():
   filename = "data/stoer-wagner-ex.txt"
@@ -145,6 +146,25 @@ def testMinCut():
     dist.update({(begin, end): cost})
 
   minimumCut(dist, 1)
+
+def subtour(m, vars):
+  minCost = 0
+  while minCost<2:
+    m.optimize()
+  
+    vals = m.getAttr('x', vars)
+    #select edges where solution > 0. specify i<j to remove duplicates
+    selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] >= 0.0 and i<j}
+    
+    minCost, minCut = minimumCut(selected, selected.keys()[0][0])
+    print("min cost")
+    print(minCost)
+    if(minCost<2):
+      expr = LinExpr(np.ones(len(minCut.keys())), [vars[i,j] for i,j in minCut.keys()])
+    m.addConstr(expr, GRB.GREATER_EQUAL, 2)
+    #minimumCut(vars, vars.keys()[0][1])
+  return m
+  
 def main():
   filename = "data/att48.txt"
   edgeset = []
@@ -184,16 +204,8 @@ def main():
   m._vars = vars
   m.Params.lazyConstraints = 1
 
-  m.optimize()
-  
-  vals = m.getAttr('x', vars)
-  #select edges where solution > 0. specify i<j to remove duplicates
-  selected = {(i,j):vals[i, j] for i,j in vals.keys() if vals[i,j] >= 0.0 and i<j}
+  m = subtour(m, vars)
 
-  
-  minimumCut(selected, selected.keys()[0][0])
-  #minimumCut(vars, vars.keys()[0][1])
-  m.write("test.sol")
   
 if __name__ == "__main__":
   main()
