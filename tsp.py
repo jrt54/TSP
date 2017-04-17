@@ -2,6 +2,8 @@ from gurobipy import *
 from sys import argv
 import operator
 import numpy as np
+import re
+import bandb
 
 #G is dict containing edges mapped to solution weight
 def minimumCutPhase(G ,start):
@@ -147,7 +149,11 @@ def testMinCut():
 
   minimumCut(dist, 1)
 
-def subtour(m, vars):
+def subtour(m):
+  m.optimize()
+
+  variables = m.getVars()
+  vars = {(map(int, re.findall(r'\d+', i.getAttr(GRB.Attr.VarName)))[0], map(int, re.findall(r'\d+', i.getAttr(GRB.Attr.VarName)))[1]):i for i in variables}
   minCost = 0
   while minCost<2:
     m.optimize()
@@ -161,7 +167,7 @@ def subtour(m, vars):
     print(minCost)
     if(minCost<2):
       expr = LinExpr(np.ones(len(minCut.keys())), [vars[i,j] for i,j in minCut.keys()])
-    m.addConstr(expr, GRB.GREATER_EQUAL, 2)
+      m.addConstr(expr, GRB.GREATER_EQUAL, 2)
     #minimumCut(vars, vars.keys()[0][1])
   return m
   
@@ -203,9 +209,12 @@ def main():
 
   m._vars = vars
   m.Params.lazyConstraints = 1
-
-  m = subtour(m, vars)
-
+  print("vars")
+  m.optimize()
+  print("NAME")
+  #print(m.getVars()[0].getAttr(GRB.Attr.VarName)[3:-1])
+  m = subtour(m)
+  #branch(m)
   
 if __name__ == "__main__":
   main()
