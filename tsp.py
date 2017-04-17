@@ -155,7 +155,8 @@ def subtour(m):
   variables = m.getVars()
   vars = {(map(int, re.findall(r'\d+', i.getAttr(GRB.Attr.VarName)))[0], map(int, re.findall(r'\d+', i.getAttr(GRB.Attr.VarName)))[1]):i for i in variables}
   minCost = 0
-  while minCost<2:
+  k = 0
+  while minCost + 1e-10<2:
     m.optimize()
   
     vals = m.getAttr('x', vars)
