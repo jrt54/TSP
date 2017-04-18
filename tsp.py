@@ -4,6 +4,7 @@ import operator
 import numpy as np
 import re
 import bandb
+import time
 
 #G is dict containing edges mapped to solution weight
 def minimumCutPhase(G ,start):
@@ -179,8 +180,9 @@ def nonblank_lines(f):
 			yield line
 
 def main():
-  filename = raw_input("Please enter the filename of the TSP problem (e.g. att48.txt): ") or "att48.txt"
-  filename = "data/" + filename
+  start_time = time.time()
+  fname = raw_input("Please enter the filename of the TSP problem (e.g. att48.txt): ") or "att48.txt"
+  filename = "data/" + fname
 
   edgeset = []
 
@@ -229,8 +231,15 @@ def main():
   print("NAME")
   #print(m.getVars()[0].getAttr(GRB.Attr.VarName)[3:-1])
   #m = subtour(m)
-  integersol = bandb.branch(m)
-  integersol.write("filename" + ".sol")
+  integersol, nodesSearched = bandb.branch(m)
+  RunTime = time.time() - start_time
+  integersol.write("runtimelogs/" + fname + ".sol")
+  
+  print nodesSearched
+  
+  print("Computational time: ", RunTime)
+  with open("runtimelogs/" + fname + ".sol", "a") as output:
+    output.write("Branches Searched: " + str(nodesSearched) + '\n' + "Runtime:" + str(RunTime))
   
 
 if __name__ == "__main__":

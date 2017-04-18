@@ -75,8 +75,8 @@ def branch(model):
 		print(isintegral)
 		nodesSearched = nodesSearched + 2
 
-	print ("Branches Searched: ", nodesSearched)	
-	return currentmodel			
+	#print ("Branches Searched: ", nodesSearched)	
+	return currentmodel, nodesSearched			
 
 	
 
