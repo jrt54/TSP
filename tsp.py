@@ -196,12 +196,12 @@ def main():
 
   
   V, E = (int(x) for x in edgeset[0].split())
-
+  print V, E
   DATA = np.loadtxt(filename, skiprows=1)
   EDGES = DATA[:,:2]
   WEIGHTS = DATA[:,2]
 
-  print V, E
+
   
   dist = {}
   #read file and create a dictionary of edge, 

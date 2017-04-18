@@ -75,7 +75,7 @@ def branch(model):
 		print(isintegral)
 		nodesSearched = nodesSearched + 2
 
-	print nodesSearched	
+	print ("Branches Searched: ", nodesSearched)	
 	return currentmodel			
 
 	
@@ -106,7 +106,7 @@ def main():
   print edgeset
 
   #V is number of nodes, E is number of edges
-  print edgeset[0]
+
   V, E = (int(x) for x in edgeset[0].split())
 
   DATA = np.loadtxt(filename, skiprows=1)
