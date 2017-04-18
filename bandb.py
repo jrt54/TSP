@@ -17,8 +17,9 @@ def branch(model):
 	
 	#if the most promising branch is integral then it is the optimal solution
 	currentmodel.optimize()
+	tsp.subtour(currentmodel)
 	branches = [(currentmodel, currentmodel.objVal)]
-
+	nodesSearched = 1
 	isintegral = True
 	for v in currentmodel.getVars():
 		if not (v.X == 0 or v.X == 1):
@@ -34,7 +35,7 @@ def branch(model):
 	#this will be a while loop later, for now we're branching ONCE
 	#if the current solution is not integral procee
 	while not(isintegral):
-		print branchingnode
+		#print branchingnode
 		daughter1 = currentmodel.copy()
 		boundednode1 = daughter1.getVarByName(branchingnode.VarName)
 		#print("before bound:", branchingnode.VarName, branchingnode.X)
@@ -62,7 +63,7 @@ def branch(model):
 
 		currentmodel = branches[0][0]
 
-		print currentmodel.getVars()
+		#print currentmodel.getVars()
 		currentmodel.write("bandb.sol")
 		isintegral = True
 		for v in currentmodel.getVars():
@@ -72,7 +73,9 @@ def branch(model):
 				isintegral = False
 				break
 		print(isintegral)
-        currentmodel.write("bandb.sol")
+		nodesSearched = nodesSearched + 2
+
+	print nodesSearched	
 	return currentmodel			
 
 	
@@ -93,16 +96,17 @@ def branch(model):
 
 
 def main():
-  filename = "data/hk48.txt"
+  filename = "hk48.txt"
   edgeset = []
 
-  with open(filename) as input:
+  with open("data/" + filename) as input:
 
     for lines in input:
       edgeset.append(lines.rstrip('\n'))
   print edgeset
 
   #V is number of nodes, E is number of edges
+  print edgeset[0]
   V, E = (int(x) for x in edgeset[0].split())
 
   DATA = np.loadtxt(filename, skiprows=1)
@@ -143,7 +147,7 @@ def main():
 
 
   integersol = branch(m)
-
+  currentmodel.write("filename" + ".sol")
   
 
   

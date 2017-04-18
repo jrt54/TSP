@@ -172,15 +172,29 @@ def subtour(m):
     #minimumCut(vars, vars.keys()[0][1])
   return m
   
+def nonblank_lines(f):
+	for l in f:
+		line = l.rstrip()
+		if line:
+			yield line
+
 def main():
-  filename = "data/att48.txt"
+  filename = raw_input("Please enter the filename of the TSP problem (e.g. att48.txt): ") or "att48.txt"
+  filename = "data/" + filename
+
   edgeset = []
 
   with open(filename) as input:
     for lines in input:
-      edgeset.append(lines.rstrip('\n'))
+	if not lines.strip()== '':        
+		edgeset.append(lines.rstrip('\n'))
 
   #V is number of nodes, E is number of edges
+  print edgeset
+  print edgeset[0]
+  print edgeset[1]
+
+  
   V, E = (int(x) for x in edgeset[0].split())
 
   DATA = np.loadtxt(filename, skiprows=1)
@@ -215,7 +229,9 @@ def main():
   print("NAME")
   #print(m.getVars()[0].getAttr(GRB.Attr.VarName)[3:-1])
   #m = subtour(m)
-  bandb.branch(m)
+  integersol = bandb.branch(m)
+  integersol.write("filename" + ".sol")
   
+
 if __name__ == "__main__":
   main()
