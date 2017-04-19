@@ -2,6 +2,21 @@ TSP Project
 Jonas Actor, Tom Klotz, Jeremy Tillay
 CAAM 571
 
+TSP Algorithms:
+tsp.py is the main file and runs the full solution
+bandb.py contains the algorithm for performing branch and bound
+outputModel contains the I/O processes for formatting the solution to be read by the user
+Data MUST be stored in the data folder as a .txt file. It MUST have no empty lines or the program will have an error. It must be formatted exactly as dsecribed in project description. 
+The folder runtime logs is automatically updated with each run keeping track of runtime, number of branches searched, optimal solution, and optimal objective.  
+The solutions are printed to console and written to .sol.out files with name matching the name of the data file storing the traveling salesman edge and vertex set. These files can be read with any .txt reader.
+
+Usage:
+$python tsp.py
+Will prompt the user for input
+write 'filename.txt' or just press enter to default to ulysses22.txt file. File must be stored in the data folder
+solution tour is outputted and written to a file in the solutions folder. runtime info is written in runtimelogs folder. 
+
+
 Upper Bound Algorithms: (Greedy) Nearest Neighbor, 2Opt, 3Opt, 2/3Opt
 
 Description of files:
