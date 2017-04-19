@@ -5,6 +5,7 @@ import numpy as np
 import re
 import bandb
 import time
+import outputModel
 
 def getTour(model, V):
 	tour = []
@@ -276,7 +277,19 @@ def main():
   print("Computational time: ", RunTime)
   with open("runtimelogs/" + fname + ".sol", "a") as output:
     output.write("Branches Searched: " + str(nodesSearched) + '\n' + "Runtime:" + str(RunTime))
-  #getTour(integersol, V)
+  	
+
+
+  in_name = ['runtimelogs/']
+  in_name.append(fname)
+  in_name.append('.sol')
+  in_name = ''.join(in_name)
+  out_name = 'solutions/' + fname + '.sol.out'
+  outputModel.outputModel(in_name, dist,out_name)
+
+  with open(out_name, "r") as output:
+	for lines in output:
+		print lines
   
 
 if __name__ == "__main__":

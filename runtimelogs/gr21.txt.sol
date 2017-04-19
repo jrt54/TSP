@@ -210,4 +210,4 @@ e[3,8] 0
 e[1,8] 0
 e[2,15] 0
 Branches Searched: 1
-Runtime:11.2952098846
+Runtime:3.54626083374
