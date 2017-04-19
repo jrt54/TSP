@@ -62,6 +62,7 @@ def branch(model):
 		#print branches
 
 		currentmodel = branches[0][0]
+		print currentmodel.getVars()
 
 		#print currentmodel.getVars()
 		currentmodel.write("bandb.sol")

@@ -7,36 +7,27 @@ import bandb
 import time
 
 def getTour(model, V):
-	tour = []
-	for i in range(V):
-		for j in range(i, V):
-			for v in model.getVars():
-				if v.x == 1 and ((str(i) + ',' + str(j) + ']') in v.VarName):
-				#print v.VarName[4: -1].replace(',', '')
-				#i = int(v.VarName[4: -1].replace(',', ''))
-				#print("Now finding edge starting from: ", i)
-					tour.append((i, j))	
-		
-				#varslist.remove(v)
-				#break 
-				#print i >= 10
-				#print v.VarName[4 :-1] 
-	for paths in tour:
-		print paths
-	
-	start_dict = {item[0]: item for item in tour}
+  filename = "runtimelogs/att48.txt.sol"
+  edgeset = []
 
-	start = tour[0][0]
-	print start, start_dict
-	res = []
-	while start_dict:
-   		item = start_dict[start]
-    		del start_dict[start]
-    		res.append(item)
-    		start = item[-1]
+  with open(filename) as input:
+    for lines in input:
+	lines = lines.rstrip('\n')
+	#print lines.rstrip('\n')[-1:]
+	if (lines.rstrip('\n')[-1:]) == str(1):
+		#print lines
+      		edgeset.append(lines.rstrip('\n'))
 
-	print(res)
- 
+  v = 0
+  i = 0
+  for i in range(0, len(edgeset)):
+	if ('e[' + str(i) + ',') in edgeset[i]:
+		print i
+		print edgeset[i]
+		nextnode = edgeset[edgeset[i].find('e[' + str(i) + ','):]
+		#print nextnode
+      	#print edgeset
+      
 
 	#	for j in range(0, V):
 	#		for v in model.getVars():
@@ -274,10 +265,11 @@ def main():
   print nodesSearched
   
   print("Computational time: ", RunTime)
-  with open("runtimelogs/" + fname + ".sol", "a") as output:
-    output.write("Branches Searched: " + str(nodesSearched) + '\n' + "Runtime:" + str(RunTime))
-  #getTour(integersol, V)
+  #with open("runtimelogs/" + fname + ".sol", "a") as output:
+  #  output.write("Branches Searched: " + str(nodesSearched) + '\n' + "Runtime:" + str(RunTime))
+  getTour(integersol, V)
   
+
 
 if __name__ == "__main__":
   main()
